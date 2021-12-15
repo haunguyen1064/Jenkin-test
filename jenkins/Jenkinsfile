@@ -19,7 +19,7 @@ pipeline {
     stage('First stage') {
       steps {
         // Setup OS VM
-        sh '''
+        bat '''
                 echo hello $USER_NAME
         '''
       }
@@ -29,7 +29,7 @@ pipeline {
        steps {
           withCredentials([usernamePassword(credentialsId: 'bit', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
 
-          sh '''
+          bat '''
               git clone http://$VSEBLD:$VSEBLD_PASS@bitbucket.rbbn.com/scm/~hnguyenthanh/test-repo.git
               cd test-repo
           '''

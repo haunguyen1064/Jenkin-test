@@ -1,5 +1,7 @@
 pipeline {
-  agent any
+  agent {
+      label "MOCK"
+  }
   parameters {
 	string(defaultValue: 'admin', description: 'Your name', name: 'USER_NAME')
 	}
@@ -19,8 +21,8 @@ pipeline {
     stage('First stage') {
       steps {
         // Setup OS VM
-        bat '''
-                echo hello $USER_NAME
+        sh '''
+                echo hello ${USER_NAME}
         '''
       }
     }
@@ -28,8 +30,7 @@ pipeline {
     stage('Build') {
        steps {
           withCredentials([usernamePassword(credentialsId: 'bit', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
-
-          bat '''
+          sh '''
               git clone http://$VSEBLD:$VSEBLD_PASS@bitbucket.rbbn.com/scm/~hnguyenthanh/test-repo.git
               cd test-repo
           '''

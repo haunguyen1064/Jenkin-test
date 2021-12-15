@@ -1,6 +1,7 @@
 pipeline {
   agent {
-      label "MOCK"
+    node {
+      label 'MOCK' }
   }
   parameters {
 	string(defaultValue: 'admin', description: 'Your name', name: 'USER_NAME')

@@ -1,7 +1,7 @@
 pipeline {
   agent {
     node {
-      label 'STORYBOOK-DEMO' }
+      label 'MOCK' }
   }
   parameters {
 	string(defaultValue: 'admin', description: 'Your name', name: 'USER_NAME')

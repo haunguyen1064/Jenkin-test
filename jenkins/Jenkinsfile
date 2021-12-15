@@ -29,7 +29,7 @@ pipeline {
 
     stage('Build') {
        steps {
-          withCredentials([usernamePassword(credentialsId: 'bit', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
+          withCredentials([usernamePassword(credentialsId: 'rbbn-bitbucket', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
           sh '''
               git clone http://$VSEBLD:$VSEBLD_PASS@bitbucket.rbbn.com/scm/~hnguyenthanh/test-repo.git
               cd test-repo

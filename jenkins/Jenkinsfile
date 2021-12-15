@@ -1,10 +1,9 @@
 pipeline {
-  agent {
-    node {
-       label 'STORYBOOK-DEMO'
-    }
+  agent any
   }
-
+  parameters {
+	string(defaultValue: 'admin', description: 'Your name', name: 'USER_NAME')
+	}
   environment {
     BUILD_RESULTS_EMAIL_LIST = "nthau3@tma.com.vn;"
     GIT_NAME = "mountebank-psx"
@@ -13,33 +12,27 @@ pipeline {
 
   options {
     timestamps()
-    timeout(time: 4, unit: 'HOURS')
+    timeout(time: 20, unit: 'MINUTES')
     buildDiscarder(logRotator(numToKeepStr:'20'))
   }
 
   stages {
-    stage('Install Dependencies') {
+    stage('First stage') {
       steps {
         // Setup OS VM
         sh '''
-                sudo yum install centos-release-scl-rh
-                sudo yum install devtoolset-7-gcc devtoolset-7-gcc-c++
-                scl enable devtoolset-7 bash
+                echo hello $USER_NAME
         '''
       }
     }
 
-              // rm -rf ref-ui
-              // cd ref-ui
     stage('Build') {
        steps {
-          withCredentials([usernamePassword(credentialsId: 'BITBUCKET_CREDS_NTH3', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
+          withCredentials([usernamePassword(credentialsId: 'bit', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
 
           sh '''
-              git clone http://$VSEBLD:$VSEBLD_PASS@bitbucket.genband.com/scm/ng/micro-api-mocks.git
-              npm i              
-              pm2 delete -s PSXMockServer || :
-              pm2 start npm --name=PSXMockServer -- run mock
+              git clone http://$VSEBLD:$VSEBLD_PASS@bitbucket.rbbn.com/scm/~hnguyenthanh/test-repo.git
+              cd test-repo
           '''
           }
         }

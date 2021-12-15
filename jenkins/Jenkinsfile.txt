@@ -1,0 +1,68 @@
+pipeline {
+  agent {
+    node {
+       label 'STORYBOOK-DEMO'
+    }
+  }
+
+  environment {
+    BUILD_RESULTS_EMAIL_LIST = "nthau3@tma.com.vn;"
+    GIT_NAME = "mountebank-psx"
+    APP_NAME = "PSX MOCK API SERVER"
+  }
+
+  options {
+    timestamps()
+    timeout(time: 4, unit: 'HOURS')
+    buildDiscarder(logRotator(numToKeepStr:'20'))
+  }
+
+  stages {
+    stage('Install Dependencies') {
+      steps {
+        // Setup OS VM
+        sh '''
+                sudo yum install centos-release-scl-rh
+                sudo yum install devtoolset-7-gcc devtoolset-7-gcc-c++
+                scl enable devtoolset-7 bash
+        '''
+      }
+    }
+
+              // rm -rf ref-ui
+              // cd ref-ui
+    stage('Build') {
+       steps {
+          withCredentials([usernamePassword(credentialsId: 'BITBUCKET_CREDS_NTH3', usernameVariable: 'VSEBLD', passwordVariable: 'VSEBLD_PASS')]) {
+
+          sh '''
+              git clone http://$VSEBLD:$VSEBLD_PASS@bitbucket.genband.com/scm/ng/micro-api-mocks.git
+              npm i              
+              pm2 delete -s PSXMockServer || :
+              pm2 start npm --name=PSXMockServer -- run mock
+          '''
+          }
+        }
+    }
+  }
+   post {
+    failure {
+      emailext body: "Build URL is: ${BUILD_URL}",
+      recipientProviders: [
+        [$class: 'DevelopersRecipientProvider']
+      ],
+      subject: "[Jenkins] Pipeline for $GIT_NAME - Build #${BUILD_NUMBER} - BUILD FAILING",
+      to: "$BUILD_RESULTS_EMAIL_LIST"
+    }
+
+    unstable {
+      emailext body: "MOCK API SERVER build UNSTABLE.\n",
+      recipientProviders: [
+        [$class: 'DevelopersRecipientProvider']
+      ],
+      subject: "[Jenkins] Pipeline for $GIT_NAME - Build #${BUILD_NUMBER} - BUILD Unstable",
+      to: "$BUILD_RESULTS_EMAIL_LIST"
+    }
+  }
+}
+
